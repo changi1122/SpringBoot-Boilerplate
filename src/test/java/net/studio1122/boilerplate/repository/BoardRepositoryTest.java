@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -83,5 +84,24 @@ class BoardRepositoryTest {
         // then
         int newSize = boardRepository.findAll().size();
         assertThat(newSize).isEqualTo(size + 2);
+    }
+
+    @Test
+    void delete() {
+        // given
+        Board board = Board.builder()
+                .title("제목")
+                .body("본문")
+                .isDeleted(false)
+                .createdDate(OffsetDateTime.now())
+                .build();
+        boardRepository.save(board);
+
+        // when
+        boardRepository.delete(board.getId());
+
+        // then
+        Optional<Board> result = boardRepository.findById(board.getId());
+        assertThat(result.isPresent()).isEqualTo(false);
     }
 }

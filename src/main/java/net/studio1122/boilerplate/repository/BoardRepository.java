@@ -3,7 +3,7 @@ package net.studio1122.boilerplate.repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import net.studio1122.boilerplate.domain.Board;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,5 +27,10 @@ public class BoardRepository {
 
     public List<Board> findAll() {
         return em.createQuery("SELECT b from Board b", Board.class).getResultList();
+    }
+
+    public void delete(Long id) {
+        Board board = em.find(Board.class, id);
+        em.remove(board);
     }
 }

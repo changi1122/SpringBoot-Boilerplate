@@ -66,6 +66,30 @@ class BoardServiceTest {
     }
 
     @Test
+    void 글_삭제() {
+        // given
+        Board board = Board.builder()
+                .title("제목")
+                .body("본문")
+                .isDeleted(false)
+                .createdDate(OffsetDateTime.now())
+                .build();
+        boardService.create(board);
+
+        // when
+        try {
+            boardService.delete(board.getId());
+        } catch (Exception e) {
+            fail("Not found 예외");
+        }
+
+        // then
+        Board result = boardService.read(board.getId()).orElseThrow();
+        assertThat(result.getIsDeleted()).isEqualTo(true);
+
+    }
+
+    @Test
     void 없는_글_수정() {
         // given
         Board updated = Board.builder()
@@ -110,4 +134,5 @@ class BoardServiceTest {
         int newSize = boardService.listAll().size();
         assertThat(newSize).isEqualTo(size + 2);
     }
+    
 }
