@@ -33,4 +33,16 @@ public class Board {
     private OffsetDateTime editedDate;
 
     private OffsetDateTime deletedDate;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public void setUser(User user) {
+        this.user = user;
+
+        if (!user.getPosts().contains(this)) {
+            user.getPosts().add(this);
+        }
+    }
 }
