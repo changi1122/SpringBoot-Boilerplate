@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import net.studio1122.boilerplate.domain.Board;
 import net.studio1122.boilerplate.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -60,7 +61,15 @@ public class BoardService {
         return boardRepository.findById(id);
     }
 
+    public List<Board> list(Pageable pageable) {
+        return boardRepository.findAll(pageable);
+    }
+
     public List<Board> listAll() {
         return boardRepository.findAll();
+    }
+
+    public Long count() {
+        return boardRepository.count();
     }
 }

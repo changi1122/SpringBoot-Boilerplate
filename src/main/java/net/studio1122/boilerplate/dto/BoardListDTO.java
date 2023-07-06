@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.studio1122.boilerplate.domain.Board;
 
-import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,17 +14,10 @@ import java.time.OffsetDateTime;
 @Builder
 public class BoardListDTO {
 
-    private Long id;
-    private String title;
-    private OffsetDateTime createdDate;
-    private OffsetDateTime editedDate;
-
-    public static BoardListDTO build(Board board) {
-        return BoardListDTO.builder()
-                .id(board.getId())
-                .title(board.getTitle())
-                .createdDate(board.getCreatedDate())
-                .editedDate(board.getEditedDate())
-                .build();
-    }
+    List<BoardListItemDTO> content;
+    private Integer size;
+    private Integer pageSize;
+    private Integer pageNumber;
+    private Long totalElements;
+    private Integer totalPage;
 }

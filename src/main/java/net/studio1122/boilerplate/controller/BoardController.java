@@ -1,13 +1,13 @@
 package net.studio1122.boilerplate.controller;
 
-import jakarta.websocket.server.PathParam;
 import net.studio1122.boilerplate.domain.Board;
 import net.studio1122.boilerplate.dto.BoardDTO;
 import net.studio1122.boilerplate.dto.BoardListDTO;
+import net.studio1122.boilerplate.dto.BoardListItemDTO;
 import net.studio1122.boilerplate.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -73,16 +73,53 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/api/boardlist")
+    @GetMapping("/api/board/list")
     @ResponseBody
-    public List<BoardListDTO> listAll() {
+    public BoardListDTO list(Pageable pageable) {
         try {
-            List<BoardListDTO> list = new ArrayList<>();
+            List<BoardListItemDTO> list = new ArrayList<>();
+
+            List<Board> found = boardService.list(pageable);
+            for (Board board : found) {
+                list.add(BoardListItemDTO.build(board));
+            }
+
+            Long totalElements = boardService.count();
+
+            return BoardListDTO.builder()
+                    .content(list)
+                    .size(list.size())
+                    .pageSize(pageable.getPageSize())
+                    .pageNumber(pageable.getPageNumber())
+                    .totalElements(totalElements)
+                    .totalPage((int) Math.ceil((double) totalElements / pageable.getPageSize()))
+                    .build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, e.getMessage()
+            );
+        }
+    }
+
+    @GetMapping("/api/board")
+    @ResponseBody
+    public BoardListDTO listAll() {
+        try {
+            List<BoardListItemDTO> list = new ArrayList<>();
 
             List<Board> found = boardService.listAll();
-            found.forEach(board -> list.add(BoardListDTO.build(board)));
+            for (Board board : found) {
+                list.add(BoardListItemDTO.build(board));
+            }
 
-            return list;
+            return BoardListDTO.builder()
+                    .content(list)
+                    .size(list.size())
+                    .pageSize(list.size())
+                    .pageNumber(0)
+                    .totalElements((long)list.size())
+                    .totalPage(0)
+                    .build();
         } catch (Exception e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage()
