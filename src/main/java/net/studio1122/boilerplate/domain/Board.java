@@ -1,6 +1,7 @@
 package net.studio1122.boilerplate.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +20,11 @@ public class Board {
     private Long id;
 
     @Column(nullable = false)
+    @NotEmpty
     private String title;
 
     @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
+    @NotEmpty
     private String body;
 
     @Column(nullable = false)

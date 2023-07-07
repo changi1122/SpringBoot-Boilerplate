@@ -1,12 +1,14 @@
 package net.studio1122.boilerplate.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.studio1122.boilerplate.enums.UserRole;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,12 +30,19 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @NotEmpty @Size(min = 4)
+    @Pattern(regexp = "[a-zA-Z\\d_]+", message = "Username Rule : only alphabet + number + _")
     private String username;
 
     @Column(unique = true, nullable = false)
+    @NotEmpty
     private String nickname;
 
     @Column(nullable = false)
+    @NotEmpty @Pattern(
+            regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d@$!%*#?&]{8,}$",
+            message = "Password Rule : min size : 8, include : least 1 alphabet & number"
+    )
     private String password;
 
     @Column(nullable = false)
@@ -41,6 +50,7 @@ public class User implements UserDetails {
     private UserRole role;
 
     @Column(nullable = false)
+    @NotEmpty @Pattern(regexp = ".+@.+", message = "Invalid email address")
     private String email;
 
     private String profileImage;

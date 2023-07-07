@@ -2,9 +2,13 @@ package net.studio1122.boilerplate.service;
 
 import jakarta.transaction.Transactional;
 import net.studio1122.boilerplate.domain.User;
+import net.studio1122.boilerplate.dto.LoginDTO;
 import net.studio1122.boilerplate.enums.UserRole;
 import net.studio1122.boilerplate.repository.UserRepository;
+import net.studio1122.boilerplate.security.JwtTokenProvider;
+import net.studio1122.boilerplate.security.UserAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -58,6 +62,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Transactional
     public void delete(Long id) throws Exception {
         Optional<User> opUser = userRepository.findById(id);
         if (opUser.isPresent()) {
@@ -69,7 +74,24 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public Optional<User> loadUserById(Long id) {
+    public String tryLogin(LoginDTO loginDTO) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(loginDTO.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not present"));
+
+        if (user.isBanned() || user.isLocked() || user.isDeleted())
+            throw new UsernameNotFoundException("User not present");
+
+        if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            Authentication authentication = new UserAuthentication(
+                    loginDTO.getUsername(), loginDTO.getPassword(), user.getAuthorities()
+            );
+            return JwtTokenProvider.generateToken(authentication);
+        } else {
+            throw new IllegalArgumentException("Password not matched");
+        }
+    }
+
+    public Optional<User> read(Long id) {
         return userRepository.findById(id);
     }
 
