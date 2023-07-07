@@ -31,9 +31,7 @@ public class BoardController {
         try {
             boardService.create(board);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -43,9 +41,7 @@ public class BoardController {
         try {
             boardService.update(id, board);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -55,9 +51,7 @@ public class BoardController {
         try {
             boardService.delete(id);
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -67,9 +61,7 @@ public class BoardController {
         try {
             return BoardDTO.build(boardService.read(id).orElseThrow());
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Not found"
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
         }
     }
 
@@ -95,9 +87,7 @@ public class BoardController {
                     .totalPage((int) Math.ceil((double) totalElements / pageable.getPageSize()))
                     .build();
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -121,9 +111,7 @@ public class BoardController {
                     .totalPage(0)
                     .build();
         } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
