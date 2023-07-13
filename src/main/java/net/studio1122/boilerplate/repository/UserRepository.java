@@ -41,14 +41,14 @@ public class UserRepository {
     }
 
     public Boolean existsByUsername(String username) {
-        Integer cnt = em.createQuery("select count(u) from User u where u.username = :username", Integer.class)
+        Long cnt = em.createQuery("select count(u) from User u where u.username = :username", Long.class)
                 .setParameter("username", username)
                 .getSingleResult();
         return (cnt != 0);
     }
 
     public Boolean existsByNickname(String nickname) {
-        Integer cnt = em.createQuery("select count(u) from User u where u.nickname = :nickname", Integer.class)
+        Long cnt = em.createQuery("select count(u) from User u where u.nickname = :nickname", Long.class)
                 .setParameter("nickname", nickname)
                 .getSingleResult();
         return (cnt != 0);

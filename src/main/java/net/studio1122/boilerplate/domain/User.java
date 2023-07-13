@@ -39,10 +39,7 @@ public class User implements UserDetails {
     private String nickname;
 
     @Column(nullable = false)
-    @NotEmpty @Pattern(
-            regexp = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d@$!%*#?&]{8,}$",
-            message = "Password Rule : min size : 8, include : least 1 alphabet & number"
-    )
+    @NotEmpty
     private String password;
 
     @Column(nullable = false)
@@ -98,7 +95,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Board> posts = new ArrayList<>();
 
-    public void setPosts(Board post) {
+    public void addPost(Board post) {
         this.posts.add(post);
 
         if (post.getUser() != this) {

@@ -17,7 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -99,6 +99,7 @@ public class UserController {
     }
 
     @GetMapping("/api/user/check/username")
+    @ResponseBody
     public Boolean canUseAsUsername(@RequestParam("username") String username) {
         try {
             return userService.canUseAsUsername(username);
@@ -108,6 +109,7 @@ public class UserController {
     }
 
     @GetMapping("/api/user/check/nickname")
+    @ResponseBody
     public Boolean canUseAsNickname(@RequestParam("nickname") String nickname) {
         try {
             return userService.canUseAsNickname(nickname);

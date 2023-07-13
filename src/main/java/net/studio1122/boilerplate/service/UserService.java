@@ -17,12 +17,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private static final String PASSWORD_RULE = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d@$!%*#?&]{8,}$";
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -32,7 +35,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void create(User user) throws Exception {
-        if (!userRepository.existsByUsername(user.getUsername()) && !user.getUsername().equals("anonymousUser")) {
+        if (!userRepository.existsByUsername(user.getUsername()) && !user.getUsername().equals("anonymousUser")
+            && Pattern.matches(PASSWORD_RULE, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRole(UserRole.USER);
             user.setProfileImage("");
@@ -42,7 +46,7 @@ public class UserService implements UserDetailsService {
             user.setCreatedDate(OffsetDateTime.now());
             userRepository.save(user);
         } else {
-            throw new Exception("username is not unique");
+            throw new Exception("username is not unique / password rule not matched");
         }
     }
 
@@ -102,11 +106,11 @@ public class UserService implements UserDetailsService {
     }
 
     public Boolean canUseAsUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return !userRepository.existsByUsername(username);
     }
 
     public Boolean canUseAsNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
+        return !userRepository.existsByNickname(nickname);
     }
 
 }
