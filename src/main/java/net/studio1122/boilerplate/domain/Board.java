@@ -44,7 +44,7 @@ public class Board {
     public void setUser(User user) {
         this.user = user;
 
-        if (!user.getPosts().contains(this)) {
+        if (user != null && !user.getPosts().contains(this)) {
             user.getPosts().add(this);
         }
     }

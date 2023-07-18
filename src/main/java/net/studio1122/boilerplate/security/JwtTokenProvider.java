@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class JwtTokenProvider {
 
-    private static final String JWT_SECRET = "<JWT_SECRET>";
+    private static final String JWT_SECRET = "wklefjlwkjefcvewrkjefcvewrkjefcvewrkjefcvewrkjefcvewrkjefcvewrkjefcvewr";
     private static final Key JWT_SECRET_KEY = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 
     // Token Expiration Time

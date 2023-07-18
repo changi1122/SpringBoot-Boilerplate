@@ -1,10 +1,13 @@
 package net.studio1122.boilerplate.controller;
 
 import net.studio1122.boilerplate.domain.Board;
+import net.studio1122.boilerplate.domain.User;
 import net.studio1122.boilerplate.dto.BoardDTO;
 import net.studio1122.boilerplate.dto.BoardListDTO;
 import net.studio1122.boilerplate.dto.BoardListItemDTO;
 import net.studio1122.boilerplate.service.BoardService;
+import net.studio1122.boilerplate.service.UserService;
+import net.studio1122.boilerplate.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,18 +22,22 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserService userService;
 
     @Autowired
-    public BoardController(BoardService boardService) {
+    public BoardController(BoardService boardService, UserService userService) {
         this.boardService = boardService;
+        this.userService = userService;
     }
 
     @PostMapping("/api/board")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void create(@RequestBody Board board) {
         try {
-            boardService.create(board);
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            boardService.create(board, user);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
@@ -39,7 +46,8 @@ public class BoardController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void update(@PathVariable("id") Long id, @RequestBody Board board) {
         try {
-            boardService.update(id, board);
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            boardService.update(id, board, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -49,7 +57,8 @@ public class BoardController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void delete(@PathVariable("id") Long id) {
         try {
-            boardService.delete(id);
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            boardService.delete(id, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }

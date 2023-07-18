@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
+
 @Controller
 public class UserController {
 
@@ -48,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/api/auth")
-    @ResponseStatus(code = HttpStatus.OK)
+    @ResponseBody
     public UserDTO getCurrent() {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
@@ -72,6 +74,11 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void update(@PathVariable("id") Long id, @RequestBody User user) {
         try {
+            User currentUser = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            if (!Objects.deepEquals(currentUser.getId(), id)) {
+                throw new Exception("User not matched");
+            }
+
             userService.update(id, user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -82,6 +89,11 @@ public class UserController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public void delete(@PathVariable("id") Long id) {
         try {
+            User currentUser = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            if (!Objects.deepEquals(currentUser.getId(), id)) {
+                throw new Exception("User not matched");
+            }
+
             userService.delete(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
