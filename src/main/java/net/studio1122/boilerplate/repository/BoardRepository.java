@@ -2,6 +2,7 @@ package net.studio1122.boilerplate.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import net.studio1122.boilerplate.domain.Board;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -45,5 +46,12 @@ public class BoardRepository {
     public void delete(Long id) {
         Board board = em.find(Board.class, id);
         em.remove(board);
+    }
+
+    @Transactional
+    public void countViewById(Long id) {
+        em.createQuery("update Board b set b.view = b.view + 1 where b.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 }

@@ -19,6 +19,7 @@ public class BoardDTO {
     private String body;
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
+    private Long view;
     private String author;
 
     public static BoardDTO build(Board board) {
@@ -28,6 +29,7 @@ public class BoardDTO {
                 .body(board.getBody())
                 .createdDate(board.getCreatedDate())
                 .editedDate(board.getEditedDate())
+                .view(board.getView())
                 .author(board.getUser().getNickname())
                 .build();
     }

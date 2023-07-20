@@ -37,6 +37,9 @@ public class Board {
 
     private OffsetDateTime deletedDate;
 
+    @Column(nullable = false)
+    private Long view;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;

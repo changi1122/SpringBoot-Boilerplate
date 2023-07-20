@@ -31,6 +31,7 @@ public class BoardService {
         board.setBody(sanitizer.sanitize(board.getBody()));
         board.setCreatedDate(OffsetDateTime.now());
         board.setIsDeleted(false);
+        board.setView(0L);
         board.setUser(user);
         boardRepository.save(board);
     }
@@ -73,6 +74,7 @@ public class BoardService {
     }
 
     public Optional<Board> read(Long id) {
+        boardRepository.countViewById(id);
         return boardRepository.findById(id);
     }
 

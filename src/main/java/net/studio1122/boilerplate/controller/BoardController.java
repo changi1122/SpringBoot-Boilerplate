@@ -67,11 +67,11 @@ public class BoardController {
     @GetMapping("/api/board/{id}")
     @ResponseBody
     public BoardDTO read(@PathVariable("id") Long id) {
-        try {
+        //try {
             return BoardDTO.build(boardService.read(id).orElseThrow());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
-        }
+        //} catch (Exception e) {
+            //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        //}
     }
 
     @GetMapping("/api/board/list")
