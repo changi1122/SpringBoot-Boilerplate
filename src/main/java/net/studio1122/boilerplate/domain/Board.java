@@ -42,6 +42,9 @@ public class Board {
     @Column(nullable = false)
     private Long view;
 
+    @Column(nullable = false)
+    private Long heart;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -54,7 +57,7 @@ public class Board {
         }
     }
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Heart> hearts = new ArrayList<>();
 
     public void addHeart(Heart heart) {

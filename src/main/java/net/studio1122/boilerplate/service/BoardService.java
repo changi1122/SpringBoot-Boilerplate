@@ -86,6 +86,10 @@ public class BoardService {
         return boardRepository.findAllOrderByView(pageable);
     }
 
+    public List<Board> listOrderByHeart(Pageable pageable) {
+        return boardRepository.findAllOrderByHeart(pageable);
+    }
+
     public List<Board> listOrderByRandom(Pageable pageable) {
         return boardRepository.findAllOrderByRandom(pageable);
     }
@@ -96,5 +100,16 @@ public class BoardService {
 
     public Long count() {
         return boardRepository.count();
+    }
+
+    @Transactional
+    public void updateHeart(Long id) throws Exception {
+        Optional<Board> opBoard = boardRepository.findById(id);
+        if (opBoard.isPresent()) {
+            Board board = opBoard.get();
+            board.setHeart((long) board.getHearts().size());
+        } else {
+            throw new Exception("Not found");
+        }
     }
 }

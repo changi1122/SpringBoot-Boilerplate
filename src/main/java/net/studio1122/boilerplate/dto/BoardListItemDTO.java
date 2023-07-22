@@ -19,6 +19,7 @@ public class BoardListItemDTO {
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
     private Long view;
+    private Long heart;
     private String author;
 
     public static BoardListItemDTO build(Board board) {
@@ -28,6 +29,7 @@ public class BoardListItemDTO {
                 .createdDate(board.getCreatedDate())
                 .editedDate(board.getEditedDate())
                 .view(board.getView())
+                .heart(board.getHeart())
                 .author(board.getUser().getNickname())
                 .build();
     }

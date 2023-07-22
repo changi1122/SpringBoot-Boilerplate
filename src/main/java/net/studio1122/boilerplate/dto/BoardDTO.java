@@ -22,7 +22,7 @@ public class BoardDTO {
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
     private Long view;
-    private Integer heart;
+    private Long heart;
     private String author;
     private Boolean isHeartGiven;
 
@@ -34,7 +34,7 @@ public class BoardDTO {
                 .createdDate(board.getCreatedDate())
                 .editedDate(board.getEditedDate())
                 .view(board.getView())
-                .heart(board.getHearts().size())
+                .heart(board.getHeart())
                 .author(board.getUser().getNickname())
                 .isHeartGiven(heart.isPresent())
                 .build();

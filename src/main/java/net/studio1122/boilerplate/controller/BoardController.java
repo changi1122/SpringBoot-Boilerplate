@@ -91,11 +91,12 @@ public class BoardController {
 
     @PostMapping("/api/board/{id}/heart")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void update(@PathVariable("id") Long id) {
+    public void giveHeart(@PathVariable("id") Long id) {
         try {
             User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
             Board board = boardService.read(id).orElseThrow();
             heartService.create(board, user);
+            boardService.updateHeart(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -121,6 +122,19 @@ public class BoardController {
             List<BoardListItemDTO> list = new ArrayList<>();
 
             List<Board> found = boardService.listOrderByView(pageable);
+            return buildBoardListDTO(pageable, list, found);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/board/list/heart")
+    @ResponseBody
+    public BoardListDTO listHeart(Pageable pageable) {
+        try {
+            List<BoardListItemDTO> list = new ArrayList<>();
+
+            List<Board> found = boardService.listOrderByHeart(pageable);
             return buildBoardListDTO(pageable, list, found);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());

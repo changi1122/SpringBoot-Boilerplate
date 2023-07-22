@@ -40,6 +40,13 @@ public class BoardRepository {
                 .getResultList();
     }
 
+    public List<Board> findAllOrderByHeart(Pageable pageable) {
+        return em.createQuery("select b from Board b where b.isDeleted = false order by b.heart DESC", Board.class)
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .setMaxResults((pageable.getPageSize()))
+                .getResultList();
+    }
+
     public List<Board> findAllOrderByRandom(Pageable pageable) {
         return em.createQuery("select b from Board b where b.isDeleted = false order by rand()", Board.class)
                 .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
