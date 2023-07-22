@@ -1,11 +1,13 @@
 package net.studio1122.boilerplate.controller;
 
 import net.studio1122.boilerplate.domain.Board;
+import net.studio1122.boilerplate.domain.Heart;
 import net.studio1122.boilerplate.domain.User;
 import net.studio1122.boilerplate.dto.BoardDTO;
 import net.studio1122.boilerplate.dto.BoardListDTO;
 import net.studio1122.boilerplate.dto.BoardListItemDTO;
 import net.studio1122.boilerplate.service.BoardService;
+import net.studio1122.boilerplate.service.HeartService;
 import net.studio1122.boilerplate.service.UserService;
 import net.studio1122.boilerplate.utility.Security;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +19,22 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class BoardController {
 
     private final BoardService boardService;
     private final UserService userService;
+    private final HeartService heartService;
 
     @Autowired
-    public BoardController(BoardService boardService, UserService userService) {
+    public BoardController(BoardService boardService, UserService userService, HeartService heartService) {
         this.boardService = boardService;
         this.userService = userService;
+        this.heartService = heartService;
     }
+
 
     @PostMapping("/api/board")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -67,11 +73,32 @@ public class BoardController {
     @GetMapping("/api/board/{id}")
     @ResponseBody
     public BoardDTO read(@PathVariable("id") Long id) {
-        //try {
-            return BoardDTO.build(boardService.read(id).orElseThrow());
-        //} catch (Exception e) {
-            //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
-        //}
+        try {
+            Board board = boardService.read(id).orElseThrow();
+            Optional<Heart> heart = Optional.empty();
+
+            String currentUsername = Security.getCurrentUsername();
+            if (!currentUsername.equals("anonymousUser")) {
+                User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+                heart = heartService.findByBoardIdAndByUserId(board, user);
+            }
+
+            return BoardDTO.build(board, heart);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+    }
+
+    @PostMapping("/api/board/{id}/heart")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void update(@PathVariable("id") Long id) {
+        try {
+            User user = (User) userService.loadUserByUsername(Security.getCurrentUsername());
+            Board board = boardService.read(id).orElseThrow();
+            heartService.create(board, user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @GetMapping("/api/board/list")
@@ -81,23 +108,53 @@ public class BoardController {
             List<BoardListItemDTO> list = new ArrayList<>();
 
             List<Board> found = boardService.list(pageable);
-            for (Board board : found) {
-                list.add(BoardListItemDTO.build(board));
-            }
-
-            Long totalElements = boardService.count();
-
-            return BoardListDTO.builder()
-                    .content(list)
-                    .size(list.size())
-                    .pageSize(pageable.getPageSize())
-                    .pageNumber(pageable.getPageNumber())
-                    .totalElements(totalElements)
-                    .totalPage((int) Math.ceil((double) totalElements / pageable.getPageSize()))
-                    .build();
+            return buildBoardListDTO(pageable, list, found);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    @GetMapping("/api/board/list/hot")
+    @ResponseBody
+    public BoardListDTO listHot(Pageable pageable) {
+        try {
+            List<BoardListItemDTO> list = new ArrayList<>();
+
+            List<Board> found = boardService.listOrderByView(pageable);
+            return buildBoardListDTO(pageable, list, found);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/board/list/random")
+    @ResponseBody
+    public BoardListDTO listRandom(Pageable pageable) {
+        try {
+            List<BoardListItemDTO> list = new ArrayList<>();
+
+            List<Board> found = boardService.listOrderByRandom(pageable);
+            return buildBoardListDTO(pageable, list, found);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    private BoardListDTO buildBoardListDTO(Pageable pageable, List<BoardListItemDTO> list, List<Board> found) {
+        for (Board board : found) {
+            list.add(BoardListItemDTO.build(board));
+        }
+
+        Long totalElements = boardService.count();
+
+        return BoardListDTO.builder()
+                .content(list)
+                .size(list.size())
+                .pageSize(pageable.getPageSize())
+                .pageNumber(pageable.getPageNumber())
+                .totalElements(totalElements)
+                .totalPage((int) Math.ceil((double) totalElements / pageable.getPageSize()))
+                .build();
     }
 
     @GetMapping("/api/board")

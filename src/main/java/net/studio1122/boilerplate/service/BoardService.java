@@ -82,6 +82,14 @@ public class BoardService {
         return boardRepository.findAll(pageable);
     }
 
+    public List<Board> listOrderByView(Pageable pageable) {
+        return boardRepository.findAllOrderByView(pageable);
+    }
+
+    public List<Board> listOrderByRandom(Pageable pageable) {
+        return boardRepository.findAllOrderByRandom(pageable);
+    }
+
     public List<Board> listAll() {
         return boardRepository.findAll();
     }

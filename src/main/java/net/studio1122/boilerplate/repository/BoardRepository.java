@@ -33,6 +33,20 @@ public class BoardRepository {
                 .getResultList();
     }
 
+    public List<Board> findAllOrderByView(Pageable pageable) {
+        return em.createQuery("select b from Board b where b.isDeleted = false order by b.view DESC", Board.class)
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .setMaxResults((pageable.getPageSize()))
+                .getResultList();
+    }
+
+    public List<Board> findAllOrderByRandom(Pageable pageable) {
+        return em.createQuery("select b from Board b where b.isDeleted = false order by rand()", Board.class)
+                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+                .setMaxResults((pageable.getPageSize()))
+                .getResultList();
+    }
+
     public List<Board> findAll() {
         return em.createQuery("select b from Board b where b.isDeleted = false", Board.class)
                 .getResultList();

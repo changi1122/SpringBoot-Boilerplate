@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -49,6 +51,17 @@ public class Board {
 
         if (user != null && !user.getPosts().contains(this)) {
             user.getPosts().add(this);
+        }
+    }
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER)
+    private List<Heart> hearts = new ArrayList<>();
+
+    public void addHeart(Heart heart) {
+        this.hearts.add(heart);
+
+        if (heart.getPost() != this) {
+            heart.setPost(this);
         }
     }
 }

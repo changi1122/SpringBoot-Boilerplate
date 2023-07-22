@@ -5,8 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.studio1122.boilerplate.domain.Board;
+import net.studio1122.boilerplate.domain.Heart;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -20,9 +22,11 @@ public class BoardDTO {
     private OffsetDateTime createdDate;
     private OffsetDateTime editedDate;
     private Long view;
+    private Integer heart;
     private String author;
+    private Boolean isHeartGiven;
 
-    public static BoardDTO build(Board board) {
+    public static BoardDTO build(Board board, Optional<Heart> heart) {
         return BoardDTO.builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -30,7 +34,9 @@ public class BoardDTO {
                 .createdDate(board.getCreatedDate())
                 .editedDate(board.getEditedDate())
                 .view(board.getView())
+                .heart(board.getHearts().size())
                 .author(board.getUser().getNickname())
+                .isHeartGiven(heart.isPresent())
                 .build();
     }
 }
